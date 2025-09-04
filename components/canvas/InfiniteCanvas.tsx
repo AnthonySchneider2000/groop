@@ -4,7 +4,7 @@ import React, { useRef, useCallback } from 'react';
 import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
 import { useCards } from '@/components/providers/CardsProvider';
 import { DndContext, DragEndEvent, DragStartEvent, DragOverEvent, useSensor, useSensors, PointerSensor } from '@dnd-kit/core';
-import { getAbsolutePositionForCard } from '@/lib/utils';
+import { getAbsolutePositionForCard, isChildOutsideParent } from '@/lib/utils';
 import { Card } from './Card';
 import { CanvasControls } from './CanvasControls';
 
@@ -51,6 +51,44 @@ export function InfiniteCanvas({ children }: InfiniteCanvasProps) {
     
     if (!card || !delta) return;
     
+    // Check if the card should be orphaned (child dragged outside parent)
+    if (card.parentId) {
+      const parentCard = state.cards[card.parentId];
+      if (parentCard) {
+        // Create updated card with new position after drag
+        const updatedCard = {
+          ...card,
+          position: {
+            x: card.position.x + delta.x,
+            y: card.position.y + delta.y
+          }
+        };
+        
+        if (isChildOutsideParent(updatedCard, parentCard, state.cards)) {
+          // Calculate the final absolute position for orphaning
+          const currentAbsolutePos = getAbsolutePositionForCard(parentCard, state.cards);
+          const finalAbsolutePosition = {
+            x: currentAbsolutePos.x + card.position.x + delta.x,
+            y: currentAbsolutePos.y + card.position.y + delta.y
+          };
+          
+          // Orphan the card - convert to absolute positioning
+          dispatch({ 
+            type: 'SET_PARENT', 
+            payload: { cardId, parentId: null } 
+          });
+          dispatch({
+            type: 'UPDATE_CARD',
+            payload: { 
+              cardId, 
+              updates: { position: finalAbsolutePosition }
+            }
+          });
+          return;
+        }
+      }
+    }
+    
     // Check if dropped on another card for nesting
     if (over && over.data.current?.type === 'card-drop') {
       const targetCardId = over.data.current.cardId as string;
@@ -75,11 +113,12 @@ export function InfiniteCanvas({ children }: InfiniteCanvasProps) {
       
       if (isValidTarget(targetCardId, cardId)) {
         // Get the current absolute position of the card after drag
-        const currentAbsoluteX = (card.parentId ? 
-          getAbsolutePositionForCard(state.cards[card.parentId], state.cards).x + card.position.x :
+        const parentCard = card.parentId ? state.cards[card.parentId] : null;
+        const currentAbsoluteX = (parentCard ? 
+          getAbsolutePositionForCard(parentCard, state.cards).x + card.position.x :
           card.position.x) + delta.x;
-        const currentAbsoluteY = (card.parentId ? 
-          getAbsolutePositionForCard(state.cards[card.parentId], state.cards).y + card.position.y :
+        const currentAbsoluteY = (parentCard ? 
+          getAbsolutePositionForCard(parentCard, state.cards).y + card.position.y :
           card.position.y) + delta.y;
         
         // Get target card's absolute position
