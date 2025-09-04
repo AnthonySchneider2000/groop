@@ -124,6 +124,10 @@ export function Card({ card }: CardProps) {
     selectCard(card.id);
   }, [selectCard, card.id]);
 
+  const handleMouseDown = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+  }, []);
+
   const handleTitleDoubleClick = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
     startEditing(card.id);
@@ -168,6 +172,7 @@ export function Card({ card }: CardProps) {
         ...style,
       }}
       onClick={handleCardClick}
+      onMouseDown={handleMouseDown}
     >
       {/* Card Header */}
       <div 

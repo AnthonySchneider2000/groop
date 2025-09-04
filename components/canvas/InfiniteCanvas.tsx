@@ -112,16 +112,21 @@ export function InfiniteCanvas({ children }: InfiniteCanvasProps) {
   }, [selectCard]);
 
   const handleCanvasDoubleClick = useCallback((event: React.MouseEvent) => {
-    if (event.target === event.currentTarget && transformRef.current) {
+    if (event.target === event.currentTarget) {
       // Get the click position relative to the canvas
       const rect = event.currentTarget.getBoundingClientRect();
       const x = event.clientX - rect.left;
       const y = event.clientY - rect.top;
       
       // Convert screen coordinates to canvas coordinates
-      const transform = transformRef.current.state;
-      const canvasX = (x - transform.positionX) / transform.scale;
-      const canvasY = (y - transform.positionY) / transform.scale;
+      let canvasX = x;
+      let canvasY = y;
+      
+      if (transformRef.current && transformRef.current.state) {
+        const transform = transformRef.current.state;
+        canvasX = (x - transform.positionX) / transform.scale;
+        canvasY = (y - transform.positionY) / transform.scale;
+      }
       
       addCard(undefined, { x: canvasX, y: canvasY });
     }
