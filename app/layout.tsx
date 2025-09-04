@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
-import { ThemeToggle } from "@/components/theme-toggle";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -13,11 +12,11 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-const SITE_TITLE = "Shadcn Boilerplate";
+const SITE_TITLE = "Groop";
 
 export const metadata: Metadata = {
   title: SITE_TITLE,
-  description: "A boilerplate for Next.js with TypeScript, Tailwind CSS, and more.",
+  description: "An infinitely zoomable canvas for creating and organizing nested cards.",
 };
 
 export default function RootLayout({
@@ -31,25 +30,9 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen bg-background`}
       >
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          <div className="relative flex min-h-screen w-full flex-col">
-            <Header />
-            <main className="flex-1">{children}</main>
-          </div>
+          <main className="w-full h-screen">{children}</main>
         </ThemeProvider>
       </body>
     </html>
-  );
-}
-
-function Header() {
-  return (
-    <header className="sticky top-0 z-10 w-full border-b bg-background">
-      <div className="flex h-16 items-center w-full px-4">
-        <div className="flex-1 flex justify-center font-medium">{SITE_TITLE}</div>
-        <div className="w-14 flex justify-end">
-          <ThemeToggle />
-        </div>
-      </div>
-    </header>
   );
 }
