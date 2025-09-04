@@ -96,30 +96,12 @@ function cardsReducer(state: CanvasState, action: CardAction): CanvasState {
 
       const updatedCards = { ...state.cards };
       
-      // Calculate the offset for this move
-      const offset = {
-        x: position.x - card.position.x,
-        y: position.y - card.position.y,
+      // Only update the position of the root card being moved
+      // Children positions are relative to their parent, so they don't need updating
+      updatedCards[cardId] = {
+        ...card,
+        position,
       };
-
-      // Move the card and all its children
-      const moveCardAndChildren = (id: string, isRoot = false) => {
-        const cardToMove = updatedCards[id];
-        if (cardToMove) {
-          updatedCards[id] = {
-            ...cardToMove,
-            position: isRoot 
-              ? position 
-              : { 
-                  x: cardToMove.position.x + offset.x, 
-                  y: cardToMove.position.y + offset.y 
-                },
-          };
-          cardToMove.childIds.forEach(childId => moveCardAndChildren(childId));
-        }
-      };
-
-      moveCardAndChildren(cardId, true);
 
       return {
         ...state,

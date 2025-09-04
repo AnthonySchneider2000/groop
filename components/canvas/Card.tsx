@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Plus, X, GripVertical } from 'lucide-react';
 import { useCards } from '@/components/providers/CardsProvider';
 import { Card as CardType } from '@/lib/types';
-import { cn } from '@/lib/utils';
+import { cn, getAbsolutePositionForCard } from '@/lib/utils';
 
 interface CardProps {
   card: CardType;
@@ -147,7 +147,27 @@ export function Card({ card }: CardProps) {
     deleteCard(card.id);
   }, [deleteCard, card.id]);
 
-  const style = transform ? {
+  // Calculate absolute position considering parent relationships
+  const getAbsolutePosition = useCallback(() => {
+    if (!card.parentId) {
+      return card.position;
+    }
+    
+    const parent = state.cards[card.parentId];
+    if (!parent) {
+      return card.position;
+    }
+    
+    const parentAbsPos = getAbsolutePositionForCard(parent, state.cards);
+    return {
+      x: parentAbsPos.x + card.position.x,
+      y: parentAbsPos.y + card.position.y,
+    };
+  }, [card, state.cards]);
+
+  const absolutePosition = getAbsolutePosition();
+  
+  const style = isDragging && transform ? {
     transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
   } : undefined;
 
@@ -164,8 +184,8 @@ export function Card({ card }: CardProps) {
         'hover:shadow-xl'
       )}
       style={{
-        left: card.position.x,
-        top: card.position.y,
+        left: absolutePosition.x,
+        top: absolutePosition.y,
         width: card.size.width,
         height: card.size.height,
         zIndex: card.zIndex + (isDragging ? 1000 : 0),

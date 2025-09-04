@@ -4,6 +4,7 @@ import React, { useRef, useCallback } from 'react';
 import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
 import { useCards } from '@/components/providers/CardsProvider';
 import { DndContext, DragEndEvent, DragStartEvent, DragOverEvent, useSensor, useSensors, PointerSensor } from '@dnd-kit/core';
+import { getAbsolutePositionForCard } from '@/lib/utils';
 import { Card } from './Card';
 import { CanvasControls } from './CanvasControls';
 
@@ -48,6 +49,8 @@ export function InfiniteCanvas({ children }: InfiniteCanvasProps) {
     
     setDragOverCardId(null);
     
+    if (!card || !delta) return;
+    
     // Check if dropped on another card for nesting
     if (over && over.data.current?.type === 'card-drop') {
       const targetCardId = over.data.current.cardId as string;
@@ -71,11 +74,22 @@ export function InfiniteCanvas({ children }: InfiniteCanvasProps) {
       };
       
       if (isValidTarget(targetCardId, cardId)) {
-        // Calculate position relative to the parent card
+        // Get the current absolute position of the card after drag
+        const currentAbsoluteX = (card.parentId ? 
+          getAbsolutePositionForCard(state.cards[card.parentId], state.cards).x + card.position.x :
+          card.position.x) + delta.x;
+        const currentAbsoluteY = (card.parentId ? 
+          getAbsolutePositionForCard(state.cards[card.parentId], state.cards).y + card.position.y :
+          card.position.y) + delta.y;
+        
+        // Get target card's absolute position
         const targetCard = state.cards[targetCardId];
+        const targetAbsPos = getAbsolutePositionForCard(targetCard, state.cards);
+        
+        // Calculate position relative to the new parent
         const relativePosition = {
-          x: card.position.x - targetCard.position.x,
-          y: card.position.y - targetCard.position.y,
+          x: currentAbsoluteX - targetAbsPos.x,
+          y: currentAbsoluteY - targetAbsPos.y,
         };
         
         // Update the card's parent and position
@@ -95,7 +109,21 @@ export function InfiniteCanvas({ children }: InfiniteCanvasProps) {
     }
     
     // Regular movement if not dropped on a valid target
-    if (card && delta) {
+    if (card.parentId) {
+      // For child cards, update relative position
+      const newRelativePosition = {
+        x: card.position.x + delta.x,
+        y: card.position.y + delta.y,
+      };
+      dispatch({
+        type: 'UPDATE_CARD',
+        payload: { 
+          cardId, 
+          updates: { position: newRelativePosition }
+        }
+      });
+    } else {
+      // For root cards, update absolute position
       const newPosition = {
         x: card.position.x + delta.x,
         y: card.position.y + delta.y,
