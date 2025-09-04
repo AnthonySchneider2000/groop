@@ -22,36 +22,39 @@ export function CanvasControls({ onResetZoom }: CanvasControlsProps) {
 
   return (
     <div className="absolute top-4 right-4 z-50 flex flex-col gap-2">
-      <div className="flex flex-col gap-1 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 p-2">
-        <Button
-          size="sm"
-          variant="ghost"
-          onClick={handleAddCard}
-          className="h-8 w-8 p-0"
-          title="Add Card (Double-click canvas)"
-        >
-          <Plus className="h-4 w-4" />
-        </Button>
-        
-        <div className="w-full h-px bg-gray-200 dark:bg-gray-600" />
-        
-        <Button
-          size="sm"
-          variant="ghost"
-          onClick={onResetZoom}
-          className="h-8 w-8 p-0"
-          title="Reset Zoom"
-        >
-          <RotateCcw className="h-4 w-4" />
-        </Button>
-        
-        <div className="text-xs text-center text-gray-500 dark:text-gray-400 px-1">
-          {Math.round(state.zoom * 100)}%
+      <div className="flex items-center gap-3 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 p-2">
+        {/* Action buttons group */}
+        <div className="flex items-center gap-1">
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={handleAddCard}
+            className="h-8 w-8 p-0"
+            title="Add Card (Double-click canvas)"
+          >
+            <Plus className="h-4 w-4" />
+          </Button>
+          
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={onResetZoom}
+            className="h-8 w-8 p-0"
+            title="Reset Zoom"
+          >
+            <RotateCcw className="h-4 w-4" />
+          </Button>
         </div>
         
-        <div className="w-full h-px bg-gray-200 dark:bg-gray-600" />
+        {/* Separator */}
+        <div className="h-6 w-px bg-gray-200 dark:bg-gray-600" />
         
-        <div className="flex justify-center">
+        {/* Info and settings group */}
+        <div className="flex items-center gap-2">
+          <div className="text-xs text-gray-500 dark:text-gray-400 font-medium">
+            {Math.round(state.zoom * 100)}%
+          </div>
+          
           <ThemeToggle />
         </div>
       </div>

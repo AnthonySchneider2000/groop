@@ -16,6 +16,7 @@ export function InfiniteCanvas({ children }: InfiniteCanvasProps) {
   const { state, moveCard, selectCard, addCard, dispatch } = useCards();
   const transformRef = useRef<any>(null);
   const [dragOverCardId, setDragOverCardId] = React.useState<string | null>(null);
+  const [activeDragCardId, setActiveDragCardId] = React.useState<string | null>(null);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -27,6 +28,7 @@ export function InfiniteCanvas({ children }: InfiniteCanvasProps) {
 
   const handleDragStart = useCallback((event: DragStartEvent) => {
     const cardId = event.active.id as string;
+    setActiveDragCardId(cardId);
     selectCard(cardId);
   }, [selectCard]);
 
@@ -36,6 +38,7 @@ export function InfiniteCanvas({ children }: InfiniteCanvasProps) {
     
     if (over && over.data.current?.type === 'card-drop') {
       const overId = over.data.current.cardId as string;
+      // Prevent showing drop indicator on the dragged card itself
       setDragOverCardId(overId !== activeId ? overId : null);
     } else {
       setDragOverCardId(null);
@@ -48,6 +51,7 @@ export function InfiniteCanvas({ children }: InfiniteCanvasProps) {
     const card = state.cards[cardId];
     
     setDragOverCardId(null);
+    setActiveDragCardId(null);
     
     if (!card || !delta) return;
     

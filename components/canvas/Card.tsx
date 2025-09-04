@@ -90,6 +90,9 @@ export function Card({ card }: CardProps) {
     data: { type: 'card-drop', cardId: card.id },
   });
 
+  // Check if this card is currently being dragged
+  const isBeingDragged = isDragging;
+
   // Combine refs
   const setRefs = useCallback((node: HTMLDivElement) => {
     setDragRef(node);
@@ -179,7 +182,7 @@ export function Card({ card }: CardProps) {
         isSelected 
           ? 'border-blue-500 shadow-blue-200 dark:shadow-blue-900' 
           : 'border-gray-200 dark:border-gray-600',
-        isOver && 'border-green-400 bg-green-50 dark:bg-green-900/20',
+        isOver && !isBeingDragged && 'border-green-400 bg-green-50 dark:bg-green-900/20',
         isDragging && 'opacity-50 z-50',
         'hover:shadow-xl'
       )}
@@ -252,20 +255,6 @@ export function Card({ card }: CardProps) {
 
       {/* Card Content Area */}
       <div className="relative p-3 h-full">
-        {hasChildren && (
-          <div className="text-xs text-gray-500 dark:text-gray-400 mb-2">
-            {card.childIds.length} child{card.childIds.length !== 1 ? 'ren' : ''}
-          </div>
-        )}
-        
-        {/* Drop zone indicator */}
-        {isOver && (
-          <div className="absolute inset-0 bg-green-100 dark:bg-green-900/30 border-2 border-dashed border-green-400 rounded-b-md flex items-center justify-center">
-            <span className="text-green-600 dark:text-green-400 font-medium">
-              Drop to nest inside
-            </span>
-          </div>
-        )}
       </div>
     </div>
   );
