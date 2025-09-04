@@ -1,6 +1,6 @@
 # Groop
 
-A collaborative infinite canvas application built with Next.js that allows users to create, organize, and nest interactive cards in a zoomable workspace.
+A infinite canvas application built with Next.js that allows users to create, organize, and nest interactive cards in a zoomable workspace.
 
 ## ✨ Features
 
@@ -130,28 +130,3 @@ The project uses:
 - **TypeScript** for type safety
 - **Tailwind CSS** for consistent styling
 - **Conventional commits** for commit message formatting
-
-## 🚀 Deployment
-
-The easiest way to deploy your Groop application is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out the [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details on other deployment options.
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feat/amazing-feature`)
-3. Commit your changes using conventional commits (`git commit -m 'feat: add amazing feature'`)
-4. Push to the branch (`git push origin feat/amazing-feature`)
-5. Open a Pull Request
-
-## 📝 License
-
-This project is private and not currently open for public contributions.
-
-## 🔗 Links
-
-- [Live Demo](https://groop-canvas.vercel.app) *(if deployed)*
-- [GitHub Repository](https://github.com/AnthonySchneider2000/groop)
-- [Next.js Documentation](https://nextjs.org/docs)
-- [shadcn/ui Documentation](https://ui.shadcn.com/)
