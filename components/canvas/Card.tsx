@@ -22,7 +22,6 @@ export function Card({ card }: CardProps) {
     startEditing,
     stopEditing,
     selectCard,
-    dispatch,
   } = useCards();
   
   const [title, setTitle] = useState(card.title);

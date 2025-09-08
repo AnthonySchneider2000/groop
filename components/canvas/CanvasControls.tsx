@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { ZoomIn, ZoomOut, RotateCcw, Plus } from 'lucide-react';
+import { RotateCcw, Plus } from 'lucide-react';
 import { useCards } from '@/components/providers/CardsProvider';
 import { ThemeToggle } from '@/components/theme-toggle';
 

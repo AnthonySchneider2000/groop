@@ -1,9 +1,9 @@
 'use client';
 
 import React, { useRef, useCallback } from 'react';
-import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
+import { TransformWrapper, TransformComponent, ReactZoomPanPinchRef } from 'react-zoom-pan-pinch';
 import { useCards } from '@/components/providers/CardsProvider';
-import { DndContext, DragEndEvent, DragStartEvent, DragOverEvent, useSensor, useSensors, PointerSensor } from '@dnd-kit/core';
+import { DndContext, DragEndEvent, DragStartEvent, useSensor, useSensors, PointerSensor } from '@dnd-kit/core';
 import { getAbsolutePositionForCard, isChildOutsideParent } from '@/lib/utils';
 import { Card } from './Card';
 import { CanvasControls } from './CanvasControls';
@@ -14,9 +14,7 @@ interface InfiniteCanvasProps {
 
 export function InfiniteCanvas({ children }: InfiniteCanvasProps) {
   const { state, moveCard, selectCard, addCard, dispatch } = useCards();
-  const transformRef = useRef<any>(null);
-  const [dragOverCardId, setDragOverCardId] = React.useState<string | null>(null);
-  const [activeDragCardId, setActiveDragCardId] = React.useState<string | null>(null);
+  const transformRef = useRef<ReactZoomPanPinchRef>(null);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -28,30 +26,13 @@ export function InfiniteCanvas({ children }: InfiniteCanvasProps) {
 
   const handleDragStart = useCallback((event: DragStartEvent) => {
     const cardId = event.active.id as string;
-    setActiveDragCardId(cardId);
     selectCard(cardId);
   }, [selectCard]);
-
-  const handleDragOver = useCallback((event: DragOverEvent) => {
-    const { active, over } = event;
-    const activeId = active.id as string;
-    
-    if (over && over.data.current?.type === 'card-drop') {
-      const overId = over.data.current.cardId as string;
-      // Prevent showing drop indicator on the dragged card itself
-      setDragOverCardId(overId !== activeId ? overId : null);
-    } else {
-      setDragOverCardId(null);
-    }
-  }, []);
 
   const handleDragEnd = useCallback((event: DragEndEvent) => {
     const { active, over, delta } = event;
     const cardId = active.id as string;
     const card = state.cards[cardId];
-    
-    setDragOverCardId(null);
-    setActiveDragCardId(null);
     
     if (!card || !delta) return;
     
@@ -243,7 +224,6 @@ export function InfiniteCanvas({ children }: InfiniteCanvasProps) {
           <DndContext
             sensors={sensors}
             onDragStart={handleDragStart}
-            onDragOver={handleDragOver}
             onDragEnd={handleDragEnd}
           >
             <div
